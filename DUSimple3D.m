@@ -8,7 +8,8 @@ classdef DUSimple3D < handle
         free_nodes_ind      % Last element in free_nodes
         cost                % Cost between 2 connected states
         cumcost             % Cost from the root of the tree to the given node
-        XYZ_BOUNDARY         % [min_x max_x min_y max_y]
+        XYZ_BOUNDARY        % [min_x max_x min_y max_y]
+        start_point         % Start position
         goal_point          % Goal position
         delta_goal_point    % Radius of goal position region
         delta_near          % Radius of near neighbor nodes
@@ -37,6 +38,7 @@ classdef DUSimple3D < handle
             this.cumcost = zeros(1,max_nodes);
             this.XYZ_BOUNDARY = zeros(6,1);
             this.tree(:, 1) = map.start_point; % Start position
+            this.start_point = map.start_point;
             this.goal_point = map.goal_point;
             this.delta_goal_point = conf.delta_goal_point;
             this.delta_near = conf.delta_near;
@@ -55,9 +57,8 @@ classdef DUSimple3D < handle
    
         function position = sample(this)
             % generates and return random point in area defined in
-            position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(6) - this.XYZ_BOUNDARY(5)] .* rand(3,1) ...
-                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(5)];
-            
+            position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.goal_point(3) - this.start_point(3)] .* rand(3,1) ...
+                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.start_point(3)];
         end
         
         function node_index = nearest(this, new_node)
@@ -104,37 +105,32 @@ classdef DUSimple3D < handle
             this.XYZ_BOUNDARY = [this.obstacle.x_constraints this.obstacle.y_constraints this.obstacle.z_constraints];
         end
         
-        function collision = obstacle_collision(this, new_node_position, nearest_node)
+        function collision = obstacle_collision(this, new_node_position, nearest_node_ind)
+            sample_rate = 2;
+            nearest_node_position = this.tree(:,nearest_node_ind);
+            increment = (new_node_position-nearest_node_position)/sample_rate;
+            mode = this.contact_mode(new_node_position-nearest_node_position);
+            if mode==1 
+                A_slide = false;
+                B_slide = false;
+            elseif mode==2
+                A_slide = false;
+                B_slide = true;
+            elseif mode==3
+                A_slide = true;
+                B_slide = true;
+            end
             collision = false;
-            %{
-            theta = new_node_position(3) * 360 / pi;
-            if (mod(theta, 90) == 0)
-                theta = theta - 1;
-            end
-            % omit any operations if there is no obstacles
-            if this.obstacle.num == 0
-                return;
-            end
-            
-            for obs_ind = 1:this.obstacle.num
-                %if c_space_collided(this.obstacle.output{obs_ind}, new_node_position, theta) == 1
-                % simple stupid collision detection based on line intersection
-                
-                vertex1 = [new_node_position(1) + cosd(theta)*this.L + sind(theta)*this.W new_node_position(2) + sind(theta)*this.L - cosd(theta)*this.W];
-                vertex2 = [new_node_position(1) + cosd(theta)*this.L - sind(theta)*this.W new_node_position(2) + sind(theta)*this.L + cosd(theta)*this.W];
-                vertex3 = [new_node_position(1) - cosd(theta)*this.L - sind(theta)*this.W new_node_position(2) - sind(theta)*this.L + cosd(theta)*this.W];
-                vertex4 = [new_node_position(1) - cosd(theta)*this.L + sind(theta)*this.W new_node_position(2) - sind(theta)*this.L - cosd(theta)*this.W];
-                
-                if isintersect_3dof(this.obstacle.output{obs_ind}, [vertex1; vertex2]) == 1 ...
-                        || isintersect_3dof(this.obstacle.output{obs_ind}, [vertex2; vertex3]) == 1 ...
-                        || isintersect_3dof(this.obstacle.output{obs_ind}, [vertex3; vertex4]) == 1 ...
-                        || isintersect_3dof(this.obstacle.output{obs_ind}, [vertex4; vertex1]) == 1
-                    collision = true;
-                    return;
-                    %end
+            for i=0:sample_rate
+                config = nearest_node_position+increment*i;
+                fc = is_forceclosure(config(1), config(2), config(3)/100, A_slide, B_slide);
+                c  = is_collision(config(1), config(2), config(3)/100, 0.47);
+                if fc==false || c==true
+                    collision = true; 
+                    break
                 end
             end
-            %}
+            
         end
         
         function new_node_ind = insert_node(this, parent_node_ind, new_node_position)
@@ -194,69 +190,7 @@ classdef DUSimple3D < handle
             end
         end
         
-        %{
-        %%% RRT*FN specific functions
-        
-        function best_path_evaluate(this)
-            %%% Find the optimal path to the goal
-            % finding all the point which are in the desired region
-            distances = zeros(this.nodes_added, 2);
-            distances(:, 1) = sum((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).^2);
-            distances(:, 2) = 1:this.nodes_added;
-            distances = sortrows(distances, 1);
-            distances(:, 1) = distances(:, 1) <= (this.delta_goal_point ^ 2);
-            dist_index = numel(find(distances(:, 1) == 1));
-            % find the cheapest path
-            if(dist_index ~= 0)
-                distances(:, 1) = this.cumcost(int32(distances(:, 2)));
-                distances = distances(1:dist_index, :);
-                distances = sortrows(distances, 1);
-                nearest_node_index = distances(1,2);
-                this.goal_reached = true;
-            else
-                nearest_node_index = distances(1,2);
-                if this.goal_reached
-                    disp('VERYBAD THING HAS HAPPENED');
-                end
-                this.goal_reached = false;
-            end
-            %
-            this.best_path_node = nearest_node_index;
-        end
-        
-        function forced_removal(this)
-            % removal function
-            % we keep count of removed nodes
-            candidate = this.list(this.children(1:(this.nodes_added)) == 0);
-            node_to_remove = candidate(randi(numel(candidate)));
-            while node_to_remove == this.best_path_node
-                node_to_remove = candidate(randi(numel(candidate)));
-            end
-            this.children(this.parent(node_to_remove)) = this.children(this.parent(node_to_remove)) - 1;
-            this.parent(node_to_remove) = -1;
-            this.tree(:, node_to_remove) = [intmax; intmax];
-            this.free_nodes(this.free_nodes_ind) = node_to_remove;
-            this.free_nodes_ind = this.free_nodes_ind + 1;
-        end
-        
-        function reused_node_ind = reuse_node(this, nearest_node, new_node_position)
-            % method inserts new node instead of the removed one.
-            if(this.free_nodes_ind == 1)
-                disp('ERROR: Cannot find any free node!!!');
-                return;
-            end
-            this.free_nodes_ind = this.free_nodes_ind - 1;
-            reused_node_ind = this.free_nodes(this.free_nodes_ind);
-            this.tree(:, reused_node_ind) = new_node_position(1:2);
-            this.orientation(reused_node_ind) = new_node_position(3);
-            this.parent(reused_node_ind) = nearest_node;
-            this.children(nearest_node) = this.children(nearest_node) + 1;
-            this.cost(reused_node_ind) = this.euclidian_distance([this.tree(:, nearest_node); this.orientation(nearest_node)], new_node_position);
-            this.cumcost(reused_node_ind) = this.cumcost(nearest_node) + this.cost(reused_node_ind);
-        end
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%
-        %}
+   
         function plot(this)
             %%% Find the optimal path to the goal
             % finding all the point which are in the desired region
@@ -291,13 +225,6 @@ classdef DUSimple3D < handle
             figure;
             set(gcf(), 'Renderer', 'opengl');
             hold on;
-            %{
-            % obstacle drawing
-            for k = 1:this.obstacle.num
-                p2 = fill(this.obstacle.output{k}(1:end, 1), this.obstacle.output{k}(1:end, 2), 'r');
-                set(p2,'HandleVisibility','off','EdgeAlpha',0);
-            end
-            %}
             
             drawn_nodes = zeros(1, this.nodes_added);
             for ind = this.nodes_added:-1:1;
@@ -319,16 +246,21 @@ classdef DUSimple3D < handle
             end
             
             plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '*b-','LineWidth', 2);
-            %{
-            plot([this.tree(1,backtrace_path) + cosd(this.orientation(backtrace_path)*360/pi)*this.L + sind(this.orientation(backtrace_path)*360/pi)*this.W; this.tree(1,backtrace_path) + cosd(this.orientation(backtrace_path)*360/pi)*this.L - sind(this.orientation(backtrace_path)*360/pi)*this.W; ...
-                this.tree(1,backtrace_path) - cosd(this.orientation(backtrace_path)*360/pi)*this.L - sind(this.orientation(backtrace_path)*360/pi)*this.W;  this.tree(1,backtrace_path) - cosd(this.orientation(backtrace_path)*360/pi)*this.L + sind(this.orientation(backtrace_path)*360/pi)*this.W; ...
-                this.tree(1,backtrace_path) + cosd(this.orientation(backtrace_path)*360/pi)*this.L + sind(this.orientation(backtrace_path)*360/pi)*this.W], ...
-                [this.tree(2,backtrace_path) + sind(this.orientation(backtrace_path)*360/pi)*this.L - cosd(this.orientation(backtrace_path)*360/pi)*this.W; this.tree(2, backtrace_path) + sind(this.orientation(backtrace_path)*360/pi)*this.L + cosd(this.orientation(backtrace_path)*360/pi)*this.W; ...
-                this.tree(2, backtrace_path) - sind(this.orientation(backtrace_path)*360/pi)*this.L + cosd(this.orientation(backtrace_path)*360/pi)*this.W; this.tree(2, backtrace_path) - sind(this.orientation(backtrace_path)*360/pi)*this.L - cosd(this.orientation(backtrace_path)*360/pi)*this.W; ...
-                this.tree(2,backtrace_path) + sind(this.orientation(backtrace_path)*360/pi)*this.L - cosd(this.orientation(backtrace_path)*360/pi)*this.W], 'm', 'LineWidth', 2);
-            %}
             plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','r','MarkerSize',10,'MarkerFaceColor','r')
             plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
+            
+            %START: plot grey region 
+            load("grey_region.mat", "P")
+            P(:,3) = P(:,3);
+            set(findall(gca, 'Type', 'Line'),'LineWidth',1);
+            grid on
+            k = boundary(P,1);
+            trisurf(k,P(:,2),P(:,1),P(:,3), 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            for i=0.1:0.1:0.9
+                this.plot_boundary(P, i)
+            end
+            %END: plot grey region
+            
             axis(this.XYZ_BOUNDARY);
             grid on;
             axis square;
@@ -362,15 +294,10 @@ classdef DUSimple3D < handle
             dist = vecnorm(src_pos - dest_pos);
         end
 
-        function dist = cost_function_(src_pos, dest_pos)
-            weight = [1;1;1];
-            dist = vecnorm([src_pos - dest_pos].*weight);
-        end
-
         % Weighted Sum Cost Function: cost = w_1*x + w_2*y + w_3*z
         function dist = cost_function(src_pos, dest_pos)
             w = 1;
-            weight = [w; w; w];
+            weight = [w; w; 100];
             weight_rep = repmat(weight, 1, size(src_pos,2));
             difference = dest_pos - src_pos;
             temp = abs(difference).*weight_rep;
@@ -382,7 +309,7 @@ classdef DUSimple3D < handle
             candidates(:, 1) = parent_node_pos + [-max_step;0;0];
             for i=1:sample_rate
                 x = 90/(sample_rate-1);
-                candidates(:,i+1) = parent_node_pos + [0 ; max_step*sind(x*(i-1)) ; -max_step*cosd(x*(i-1))];
+                candidates(:,i+1) = parent_node_pos + [0 ; max_step*sind(x*(i-1)) ; -(max_step/100)*cosd(x*(i-1))];
             end
 
         end     
@@ -401,6 +328,18 @@ classdef DUSimple3D < handle
                 end
             end
             
+        end
+        
+        function plot_boundary(P, i)
+            temp=[];
+            for j=1:size(P,1)
+                if round(P(j,3),1)==round(i,1)
+                   temp = [temp;P(j,:)];
+                end
+            end
+            hold on;
+            k = boundary(temp(:,1), temp(:,2), 1);
+            plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
         end
         
         
