@@ -249,6 +249,14 @@ classdef DUSimple3D < handle
             plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','r','MarkerSize',10,'MarkerFaceColor','r')
             plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
             
+            %Save output path as csv file
+            output_path = zeros(numel(backtrace_path),3);
+            for ind = numel(backtrace_path):-1:1;
+                output_path(numel(backtrace_path)-ind+1,:) = this.tree(:,backtrace_path(ind)).';
+            end
+            file_name = ['output_path/' datestr(now, 'yyyy-mm-dd HH:MM:SS') '.csv'];
+            writematrix(output_path, file_name);
+
             %START: plot grey region 
             load("grey_region.mat", "P")
             P(:,3) = P(:,3);
