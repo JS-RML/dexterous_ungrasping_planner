@@ -195,7 +195,7 @@ classdef DUSimple3D < handle
             %%% Find the optimal path to the goal
             % finding all the point which are in the desired region
             distances = zeros(this.nodes_added, 2);
-            distances(:, 1) = sum((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).^2);
+            distances(:, 1) = sum(((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).*[1;1;100]).^2); %scale z axis with 100
             distances(:, 2) = 1:this.nodes_added;
             distances = sortrows(distances, 1);
             distances(:, 1) = distances(:, 1) <= this.delta_goal_point ^ 2;
