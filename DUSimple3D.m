@@ -123,8 +123,8 @@ classdef DUSimple3D < handle
             collision = false;
             for i=0:sample_rate
                 config = nearest_node_position+increment*i;
-                fc = is_forceclosure(config(1), config(2), config(3)/100, A_slide, B_slide);
-                c  = is_collision(config(1), config(2), config(3)/100, 0.47);
+                fc = is_forceclosure(config(1), config(2), config(3), A_slide, B_slide);
+                c  = is_collision(config(1), config(2), config(3), 0.47);
                 if fc==false || c==true
                     collision = true; 
                     break
@@ -195,10 +195,11 @@ classdef DUSimple3D < handle
             %%% Find the optimal path to the goal
             % finding all the point which are in the desired region
             distances = zeros(this.nodes_added, 2);
-            distances(:, 1) = sum(((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).*[1;1;100]).^2); %scale z axis with 100
+            distances(:, 1) = this.cost_function(this.tree(:, 1:(this.nodes_added)), repmat(this.goal_point',1,this.nodes_added)); % L1 norm
+            %distances(:, 1) = sum(((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).*[1;1;100]).^2); % L2 norm
             distances(:, 2) = 1:this.nodes_added;
             distances = sortrows(distances, 1);
-            distances(:, 1) = distances(:, 1) <= this.delta_goal_point ^ 2;
+            distances(:, 1) = distances(:, 1) <= this.delta_goal_point; % ^ 2; % Use square with L2 norm
             dist_index = numel(find(distances(:, 1) == 1));
             % find the cheapest path
             if(dist_index ~= 0)
