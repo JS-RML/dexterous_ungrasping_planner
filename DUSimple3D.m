@@ -57,8 +57,15 @@ classdef DUSimple3D < handle
    
         function position = sample(this)
             % generates and return random point in area defined in
-            position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.goal_point(3) - this.start_point(3)] .* rand(3,1) ...
-                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.start_point(3)];
+            position = [this.start_point(1)*1.5 - this.XYZ_BOUNDARY(1); this.goal_point(2)*1.5 - this.XYZ_BOUNDARY(3); this.start_point(3)*1.1 - this.goal_point(3)*0.9] .* rand(3,1) ...
+                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.goal_point(3)*0.9];
+            %position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.goal_point(3) - this.start_point(3)] .* rand(3,1) ...
+            %    + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.start_point(3)];
+            %position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(6) - this.XYZ_BOUNDARY(5)] .* rand(3,1) ...
+            %    + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(5)];
+            if rand < 0.5
+                position = this.goal_point';
+            end
         end
         
         function node_index = nearest(this, new_node)
@@ -123,8 +130,8 @@ classdef DUSimple3D < handle
             collision = false;
             for i=0:sample_rate
                 config = nearest_node_position+increment*i;
-                fc = is_forceclosure(config(1), config(2), config(3)/100, A_slide, B_slide);
-                c  = is_collision(config(1), config(2), config(3)/100, 0.47);
+                fc = is_forceclosure(config(1), config(2), config(3), A_slide, B_slide);
+                c  = is_collision(config(1), config(2), config(3), 0.47);
                 if fc==false || c==true
                     collision = true; 
                     break
@@ -140,7 +147,19 @@ classdef DUSimple3D < handle
             this.parent(this.nodes_added) = parent_node_ind;            % adding information about parent-children information
             this.children(parent_node_ind) = this.children(parent_node_ind) + 1;
             this.cost(this.nodes_added) = this.cost_function(this.tree(:, parent_node_ind), new_node_position);  % not that important
-            this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added);   % cummulative cost
+            % TODO: Add a line to take into account change of contact
+            if parent_node_ind==1
+                mode_of_prev = 2;
+            else
+                mode_of_prev = this.contact_mode(this.tree(:, parent_node_ind)-this.tree(:, this.parent(parent_node_ind)));
+                %[this.tree(:, parent_node_ind)-this.tree(:, this.parent(parent_node_ind))]
+            end
+            mode_of_new_node = this.contact_mode(this.tree(:, parent_node_ind)-new_node_position);
+            mode_change_cost =  abs(mode_of_new_node-mode_of_prev);
+            %[this.tree(:, parent_node_ind)-new_node_position]
+            %[mode_of_prev mode_of_new_node mode_change_cost]
+            %this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added);   % cummulative cost
+            this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added) + this.mode_change_weight*mode_change_cost;
             new_node_ind = this.nodes_added;
         end
         
@@ -179,7 +198,21 @@ classdef DUSimple3D < handle
                 if (min_node_ind == neighbors(ind))
                     continue;
                 end
-                temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind));
+                
+                % TODO: Add a line to take into account change of contact
+                if new_node_ind==1
+                    mode_of_prev = 2;
+                else
+                    mode_of_prev = this.contact_mode(this.tree(:, new_node_ind)-this.tree(:, this.parent(new_node_ind)));
+                end
+                mode_of_neighbor = this.contact_mode(this.tree(:, new_node_ind)-this.tree(:, neighbors(ind)));
+                mode_change_cost =  abs(mode_of_neighbor-mode_of_prev);
+                %this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added) + this.mode_change_weight*mode_change_cost;
+                temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind))+ this.mode_change_weight*mode_change_cost;
+                %[this.tree(:, neighbors(ind)) this.tree(:, new_node_ind)]
+                %[this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind))]
+                %temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind));
+                % TODO: Add line to take into account change of contact mod
                 if (temp_cost < this.cumcost(neighbors(ind)))
                     this.cumcost(neighbors(ind)) = temp_cost;
                     this.children(this.parent(neighbors(ind))) = this.children(this.parent(neighbors(ind))) - 1;
@@ -195,10 +228,11 @@ classdef DUSimple3D < handle
             %%% Find the optimal path to the goal
             % finding all the point which are in the desired region
             distances = zeros(this.nodes_added, 2);
-            distances(:, 1) = sum((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).^2);
+            %distances(:, 1) = sum((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).^2);
+            distances(:, 1) = this.cost_function(this.tree(:,1:(this.nodes_added)), repmat(this.goal_point', 1, this.nodes_added)); 
             distances(:, 2) = 1:this.nodes_added;
             distances = sortrows(distances, 1);
-            distances(:, 1) = distances(:, 1) <= this.delta_goal_point ^ 2;
+            distances(:, 1) = distances(:, 1) <= this.delta_goal_point;
             dist_index = numel(find(distances(:, 1) == 1));
             % find the cheapest path
             if(dist_index ~= 0)
@@ -225,26 +259,30 @@ classdef DUSimple3D < handle
             figure;
             set(gcf(), 'Renderer', 'opengl');
             hold on;
+            format short;
+            flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
             
-            drawn_nodes = zeros(1, this.nodes_added);
-            for ind = this.nodes_added:-1:1;
-                if(sum(this.free_nodes(1:this.free_nodes_ind) == ind)>0)
-                    continue;
-                end
-                current_index = ind;
-                while(current_index ~= 1 && current_index ~= -1)
-                    % avoid drawing same nodes twice or more times
-                    if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
-                        plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
-                            [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
-                            [this.tree(3, current_index);this.tree(3, this.parent(current_index))], 'g-','LineWidth', 0.5);
-                        drawn_nodes(current_index) = true;
-                        
+            draw_nodes = 0;
+            if draw_nodes==1
+                drawn_nodes = zeros(1, this.nodes_added);
+                for ind = this.nodes_added:-1:1;
+                    if(sum(this.free_nodes(1:this.free_nodes_ind) == ind)>0)
+                        continue;
                     end
-                    current_index = this.parent(current_index);
+                    current_index = ind;
+                    while(current_index ~= 1 && current_index ~= -1)
+                        % avoid drawing same nodes twice or more times
+                        if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
+                            plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
+                                [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
+                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], 'g-','LineWidth', 0.5);
+                            drawn_nodes(current_index) = true;
+
+                        end
+                        current_index = this.parent(current_index);
+                    end
                 end
             end
-            
             plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '*b-','LineWidth', 2);
             plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','r','MarkerSize',10,'MarkerFaceColor','r')
             plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
@@ -311,19 +349,26 @@ classdef DUSimple3D < handle
                 x = 90/(sample_rate-1);
                 candidates(:,i+1) = parent_node_pos + [0 ; max_step*sind(x*(i-1)) ; -(max_step/100)*cosd(x*(i-1))];
             end
-
-        end     
+        end
+        
+        % Monotonic actions only
+        function candidates = feasbile_actiond(max_step, parent_node_pos, sample_rate)
+            candidates = zeros(3, sample_rate+1);
+            candidates(:, 1) = parent_node_pos + [-max_step;0;0];
+            candidates(:, 2) = parent_node_pos + [0;max_step;0];
+            candidates(:, 3) = parent_node_pos + [0;0;-max_step/100];
+        end 
         
         function mode = contact_mode(diff)
             mode = 2*ones(1,size(diff,2));
             for i=1:size(diff,2)
-                if diff(1,i)<0 && diff(2,i)==0 && diff(3,i)==0
+                if diff(1,i)~=0 && diff(2,i)==0 && diff(3,i)==0
                     mode(i) = 1;
-                elseif diff(1,i)==0 && diff(2,i)>0 && diff(3,i)==0
+                elseif diff(1,i)==0 && diff(2,i)~=0 && diff(3,i)==0
                     mode(i) = 2;
-                elseif diff(1,i)==0 && diff(2,i)>0 && diff(3,i)<0
+                elseif diff(1,i)==0 && diff(2,i)~=0 && diff(3,i)~=0
                     mode(i) = 3;
-                elseif diff(1,i)==0 && diff(2,i)==0 && diff(3,i)<0
+                elseif diff(1,i)==0 && diff(2,i)==0 && diff(3,i)~=0
                     mode(i) = 3;
                 end
             end
