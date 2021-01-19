@@ -291,15 +291,18 @@ classdef DUSimple3D < handle
             plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
             
             %Save output path as csv file
-            output_path = zeros(numel(backtrace_path),3);
-            for ind = numel(backtrace_path):-1:1;
-                output_path(numel(backtrace_path)-ind+1,:) = this.tree(:,backtrace_path(ind)).';
+            output_path = 0;
+            if output_path == 1
+                output_path = zeros(numel(backtrace_path),3);
+                for ind = numel(backtrace_path):-1:1;
+                    output_path(numel(backtrace_path)-ind+1,:) = this.tree(:,backtrace_path(ind)).';
+                end
+                file_name = ['output_path/' datestr(now, 'yyyy-mm-dd HH:MM:SS') '.csv'];
+                writematrix(output_path, file_name);
             end
-            file_name = ['output_path/' datestr(now, 'yyyy-mm-dd HH:MM:SS') '.csv'];
-            writematrix(output_path, file_name);
 
             %START: plot grey region 
-            load("grey_region.mat", "P")
+            load("grey_dft0.mat", "P")
             P(:,3) = P(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
@@ -309,6 +312,14 @@ classdef DUSimple3D < handle
                 this.plot_boundary(P, i)
             end
             %END: plot grey region
+            
+            %plot obs region
+            load("red_dft0.mat", "OBS")
+            OBS(:,3) = OBS(:,3);
+            set(findall(gca, 'Type', 'Line'),'LineWidth',1);
+            grid on
+            OBS_bound = boundary(OBS,1);
+            trisurf(OBS_bound,OBS(:,2),OBS(:,1),OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
             
             axis(this.XYZ_BOUNDARY);
             grid on;
