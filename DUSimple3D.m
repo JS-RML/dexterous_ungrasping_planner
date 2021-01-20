@@ -261,12 +261,13 @@ classdef DUSimple3D < handle
             end
 
             %START: plot grey region 
-            load("grey_region.mat", "P")
+            load("grey_region(dft0.47).mat", "P")
             P(:,3) = P(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
             k = boundary(P,1);
-            trisurf(k,P(:,2),P(:,1),P(:,3), 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            trisurf(k,P(:,2),P(:,1),P(:,3)./100, 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            P(:,3) = P(:,3)./100;
             for i=0.1:0.1:0.9
                 this.plot_boundary(P, i)
             end

@@ -8,7 +8,7 @@ y_obs = [];
 z_obs = [];
 
 d_FT = 0.47;
-for i = 1:1:10
+for i = 1:1:9
     d_AB = i/10;
     for theta = 1:1:90
         for psi =1:1:90
@@ -43,9 +43,9 @@ for i = 1:1:10
     axis([0 90 0 90 0.1 0.9])
 
 end
-P = [x,y,z];
+P = [x,y,z.*100];
 k = boundary(P,1);
-trisurf(k,P(:,2),P(:,1),P(:,3), 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+trisurf(k,P(:,2),P(:,1),P(:,3)./100, 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
             
 OBS = [x_obs,y_obs,z_obs.*100];
 OBS_bound = boundary(OBS,1);
