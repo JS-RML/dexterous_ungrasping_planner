@@ -140,17 +140,7 @@ classdef DUSimple3D < handle
             this.parent(this.nodes_added) = parent_node_ind;            % adding information about parent-children information
             this.children(parent_node_ind) = this.children(parent_node_ind) + 1;
             this.cost(this.nodes_added) = this.cost_function(this.tree(:, parent_node_ind), new_node_position);  % not that important
-            %this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added);   % cummulative cost
-            % cummulative cost involves mode change cost
-            if parent_node_ind == 1
-                parent_of_parent = 1;
-            else
-                parent_of_parent = this.parent(parent_node_ind);
-            end
-            mode_of_parent = this.contact_mode(this.tree(:, parent_node_ind)-this.tree(:, parent_of_parent));
-            mode_of_new = this.contact_mode(new_node_position-this.tree(:, parent_node_ind)); 
-            mode_change_cost = abs(mode_of_new-mode_of_parent);
-            this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added) + this.mode_change_weight*mode_change_cost;
+            this.cumcost(this.nodes_added) = this.cumcost(parent_node_ind) + this.cost(this.nodes_added);   % cummulative cost
             new_node_ind = this.nodes_added;
         end
         
@@ -170,29 +160,9 @@ classdef DUSimple3D < handle
             % finds the node with minimal cummulative cost node from the root of
             % the tree. i.e. find the cheapest path end node.
             min_node_ind = nearest_node;
-            %min_cumcost = this.cumcost(nearest_node) + this.cost_function(this.tree(:, nearest_node), new_node_position);
-            % cummulative cost involves mode change cost 
-            if nearest_node == 1
-                parent_of_nearest_node = 1;
-            else
-                parent_of_nearest_node = this.parent(nearest_node);
-            end
-            mode_of_prev = this.contact_mode(this.tree(:, nearest_node)-this.tree(:, parent_of_nearest_node));
-            mode_of_new = this.contact_mode(new_node_position-this.tree(:, nearest_node));
-            mode_change_cost = abs(mode_of_new-mode_of_prev);
-            min_cumcost = this.cumcost(nearest_node) + this.cost_function(this.tree(:, nearest_node), new_node_position) + this.mode_change_weight*mode_change_cost;
+            min_cumcost = this.cumcost(nearest_node) + this.cost_function(this.tree(:, nearest_node), new_node_position);
             for ind=1:numel(neighbors)
-                %temp_cumcost = this.cumcost(neighbors(ind)) + this.cost_function(this.tree(:, neighbors(ind)), new_node_position);
-                %mode change cost between new node and neighbors
-                if neighbors(ind) == 1
-                    parent_of_nbr = 1;
-                else
-                    parent_of_nbr = this.parent(neighbors(ind));
-                end
-                mode_of_nbr = this.contact_mode(this.tree(:, neighbors(ind))-this.tree(:, parent_of_nbr)); % mode of neighbor
-                mode_of_new = this.contact_mode(new_node_position-this.tree(:, neighbors(ind)));
-                mode_change_cost = abs(mode_of_new-mode_of_nbr);
-                temp_cumcost = this.cumcost(neighbors(ind)) + this.cost_function(this.tree(:, neighbors(ind)), new_node_position) + this.mode_change_weight*mode_change_cost;
+                temp_cumcost = this.cumcost(neighbors(ind)) + this.cost_function(this.tree(:, neighbors(ind)), new_node_position);
                 if temp_cumcost < min_cumcost
                     min_cumcost = temp_cumcost;
                     min_node_ind = neighbors(ind);
@@ -209,17 +179,7 @@ classdef DUSimple3D < handle
                 if (min_node_ind == neighbors(ind))
                     continue;
                 end
-                %temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind));
-                % cummulative cost involves mode change cost
-                if neighbors(ind) == 1
-                    parent_of_nbr = 1;
-                else
-                    parent_of_nbr = this.parent(neighbors(ind));
-                end
-                mode_of_nbr = this.contact_mode(this.tree(:, neighbors(ind))-this.tree(:, parent_of_nbr)); % mode of neighbor
-                mode_of_new = this.contact_mode(this.tree(:, new_node_ind)-this.tree(:, neighbors(ind)));
-                mode_change_cost = abs(mode_of_new-mode_of_nbr);
-                temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind)) + this.mode_change_weight*mode_change_cost;
+                temp_cost = this.cumcost(new_node_ind) + this.cost_function(this.tree(:, neighbors(ind)), this.tree(:, new_node_ind));
                 if (temp_cost < this.cumcost(neighbors(ind)))
                     this.cumcost(neighbors(ind)) = temp_cost;
                     this.children(this.parent(neighbors(ind))) = this.children(this.parent(neighbors(ind))) - 1;
@@ -235,11 +195,10 @@ classdef DUSimple3D < handle
             %%% Find the optimal path to the goal
             % finding all the point which are in the desired region
             distances = zeros(this.nodes_added, 2);
-            distances(:, 1) = this.cost_function(this.tree(:, 1:(this.nodes_added)), repmat(this.goal_point',1,this.nodes_added)); % L1 norm
-            %distances(:, 1) = sum(((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).*[1;1;100]).^2); % L2 norm
+            distances(:, 1) = sum((this.tree(:,1:(this.nodes_added)) - repmat(this.goal_point', 1, this.nodes_added)).^2);
             distances(:, 2) = 1:this.nodes_added;
             distances = sortrows(distances, 1);
-            distances(:, 1) = distances(:, 1) <= this.delta_goal_point; % ^ 2; % Use square with L2 norm
+            distances(:, 1) = distances(:, 1) <= this.delta_goal_point ^ 2;
             dist_index = numel(find(distances(:, 1) == 1));
             % find the cheapest path
             if(dist_index ~= 0)
@@ -302,7 +261,7 @@ classdef DUSimple3D < handle
             end
 
             %START: plot grey region 
-            load("grey_dft0.mat", "P")
+            load("grey_region.mat", "P")
             P(:,3) = P(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
@@ -314,7 +273,7 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("red_dft0.mat", "OBS")
+            load("red_region(dft0.47).mat", "OBS")
             OBS(:,3) = OBS(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
@@ -377,13 +336,13 @@ classdef DUSimple3D < handle
         function mode = contact_mode(diff)
             mode = 2*ones(1,size(diff,2));
             for i=1:size(diff,2)
-                if diff(1,i)~=0 && diff(2,i)==0 && diff(3,i)==0
+                if diff(1,i)<0 && diff(2,i)==0 && diff(3,i)==0
                     mode(i) = 1;
-                elseif diff(1,i)==0 && diff(2,i)~=0 && diff(3,i)==0
+                elseif diff(1,i)==0 && diff(2,i)>0 && diff(3,i)==0
                     mode(i) = 2;
-                elseif diff(1,i)==0 && diff(2,i)~=0 && diff(3,i)~=0
+                elseif diff(1,i)==0 && diff(2,i)>0 && diff(3,i)<0
                     mode(i) = 3;
-                elseif diff(1,i)==0 && diff(2,i)==0 && diff(3,i)~=0
+                elseif diff(1,i)==0 && diff(2,i)==0 && diff(3,i)<0
                     mode(i) = 3;
                 end
             end
