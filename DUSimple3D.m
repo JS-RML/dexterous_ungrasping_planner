@@ -261,7 +261,7 @@ classdef DUSimple3D < handle
             end
 
             %START: plot grey region 
-            load("grey_region(dft0.47).mat", "P")
+            load("regions/grey_region(dft0.47).mat", "P")
             P(:,3) = P(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
@@ -274,7 +274,7 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("red_region(dft0.47).mat", "OBS")
+            load("regions/red_region(dft0.47).mat", "OBS")
             OBS(:,3) = OBS(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
