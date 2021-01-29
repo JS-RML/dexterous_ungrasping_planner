@@ -24,6 +24,8 @@ classdef DUSimple3D < handle
         list
         num_rewired
         mode_change_weight
+        % boolen for enabling finger's collision check
+        finger_collision_check
     end
     methods
         % class constructor
@@ -53,6 +55,8 @@ classdef DUSimple3D < handle
             this.list = 1:max_nodes;
             this.num_rewired = 0;
             this.mode_change_weight = conf.mode_change_weight;
+            %finger's collision check
+            this.finger_collision_check = false; %TODO: change to true if enable finger collision check
         end
    
         function position = sample(this)
@@ -124,8 +128,13 @@ classdef DUSimple3D < handle
             for i=0:sample_rate
                 config = nearest_node_position+increment*i;
                 fc = is_forceclosure(config(1), config(2), config(3), A_slide, B_slide);
-                c  = is_collision(config(1), config(2), config(3), 0.47);
-                if fc==false || c==true
+                thumb_c  = is_thumb_collision(config(1), config(2), config(3), 0.47);
+                if this.finger_collision_check == true
+                    finger_c = is_finger_collision(config(1), config(2), config(3),0.3,0.7);
+                else
+                    finger_c = false;
+                end
+                if fc==false || thumb_c==true || finger_c==true
                     collision = true; 
                     break
                 end
@@ -274,12 +283,22 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("regions/red_region(dft0.47).mat", "OBS")
-            OBS(:,3) = OBS(:,3);
+            load("regions/red_region(dft0.47).mat", "T_OBS")
+            T_OBS(:,3) = T_OBS(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
-            OBS_bound = boundary(OBS,1);
-            trisurf(OBS_bound,OBS(:,2),OBS(:,1),OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            T_OBS_bound = boundary(T_OBS,1);
+            trisurf(T_OBS_bound,T_OBS(:,2),T_OBS(:,1),T_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+
+            %plot finger region
+            if this.finger_collision_check == true
+                load("regions/UpperObstacle(0.3,0.7)/finger_collision(0.3,0.7).mat", "F_OBS")
+                F_OBS(:,3) = F_OBS(:,3);
+                set(findall(gca, 'Type', 'Line'),'LineWidth',1);
+                grid on
+                F_OBS_bound = boundary(F_OBS,1);
+                trisurf(F_OBS_bound,F_OBS(:,2),F_OBS(:,1),F_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            end
             
             axis(this.XYZ_BOUNDARY);
             grid on;
