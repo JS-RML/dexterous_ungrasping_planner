@@ -9,12 +9,14 @@ z_t_obs = [];
 x_f_obs = [];
 y_f_obs = [];
 z_f_obs = [];
-finger_collision_check = false;
+finger_collision_check = true; %TODO: change to true for finger's collision check
 
-d_FT = 0;
+d_FT = 0.47;
+
 %corner position relative to G
-corner_x = 0.3;
-corner_y = 0.7;
+corner_x = 0.4;
+corner_y = 0.6;
+
 for i = 1:1:9
     d_AB = i/10;
     for theta = 1:1:90
@@ -78,5 +80,5 @@ trisurf(T_OBS_bound,T_OBS(:,2),T_OBS(:,1),T_OBS(:,3)./100, 'FaceColor', 'r', 'Fa
 if finger_collision_check == true
     F_OBS = [x_f_obs,y_f_obs,z_f_obs.*100];
     F_OBS_bound = boundary(F_OBS,1);
-    trisurf(F_OBS_bound,F_OBS(:,2),F_OBS(:,1),F_OBS(:,3)./100, 'FaceColor', '#D95319', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+    trisurf(F_OBS_bound,F_OBS(:,2),F_OBS(:,1),F_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
 end
