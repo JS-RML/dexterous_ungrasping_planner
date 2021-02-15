@@ -1,1 +1,1 @@
-# rrtstar
+# Dexterous Ungrasping Planner
