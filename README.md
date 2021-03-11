@@ -15,5 +15,8 @@ For details about the implementation of dexterous ungrasping on the UR10 robot a
 
 **Contributers**: [Chung Hee Kim](https://sites.google.com/view/chjohnkim/home), Ka Hei Mak, and [Jungwon Seo](http://junseo.people.ust.hk/) 
 
+## Planning examples
+Several examples under different planning scenarios, such as, gripper configuration or addition obstacle in the environment, are provided in this repository. Detailed instructions can be found in 'examples/README.md'.
+
 ## Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
