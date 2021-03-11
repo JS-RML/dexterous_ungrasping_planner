@@ -1,1 +1,1 @@
-# rrtstar
+# dexterous_ungrasping_planner
