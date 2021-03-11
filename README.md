@@ -1,1 +1,1 @@
-# dexterous_ungrasping_planner
+# Dexterous ungrasping planner
