@@ -15,7 +15,7 @@ For details about the implementation of dexterous ungrasping on the UR10 robot a
 
 **Contributers**: [Chung Hee Kim](https://sites.google.com/view/chjohnkim/home), Ka Hei Mak, and [Jungwon Seo](http://junseo.people.ust.hk/) 
 
-## 2. Backgound
+## 2. Background
 
 ## 3. Run the planner
 
