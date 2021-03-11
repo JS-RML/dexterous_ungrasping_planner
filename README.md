@@ -5,5 +5,15 @@ This repository contains the MATLAB implementation of dexterous ungrasping plann
 
 For details about the implementation of dexterous ungrasping on the UR10 robot arm platform, please refer to [Dexterous Ungrasping](https://github.com/HKUST-RML/shallow_depth_insertion).
 
+**Published Article**
+
+- C. H. Kim and J. Seo, "[Dexerous Ungrasping: Methods and Designs for Secure Placement and insertion through Dexterous Manpulation]()," submitted to *IEEE Transactions on Robotics* (Under review). 
+
+- C. H. Kim and J. Seo, "[Shallow-Depth Insertion: Peg in Shallow Hole Through Robotic In-Hand Manipulation](https://ieeexplore.ieee.org/document/8598749)," in *IEEE Robotics and Automation Letters*, vol. 4, no. 2, pp. 383-390, April 2019.
+
+    *If you use shallow-depth insertion for your application or research, please star this repo and cite our related paper.* [(BibTeX)](files/BibTeX.txt)
+
+**Contributers**: [Chung Hee Kim](https://sites.google.com/view/chjohnkim/home), Ka Hei Mak, and [Jungwon Seo](http://junseo.people.ust.hk/) 
+
 ## Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
