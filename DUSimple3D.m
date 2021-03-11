@@ -283,7 +283,7 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("regions/red_region(dft0.47).mat", "T_OBS")
+            load("regions/thumb_collision(dft0.47).mat", "T_OBS")
             T_OBS(:,3) = T_OBS(:,3);
             set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
