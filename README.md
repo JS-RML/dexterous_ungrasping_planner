@@ -1,1 +1,1 @@
-# Dexterous Ungrasping Planner
+# Dexterous ungrasping planner
