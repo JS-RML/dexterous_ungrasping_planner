@@ -20,7 +20,7 @@ For details about the implementation of dexterous ungrasping on the UR10 robot a
 ## 3. Run the planner
 
 ## 4. Planning examples
-Several examples under different planning scenarios, such as, gripper configuration or addition obstacle in the environment, are provided in this repository. Detailed instructions can be found in `examples/README.md`.
+Several examples under different planning scenarios, such as, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions can be found in `examples/README.md`.
 
 ## Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
