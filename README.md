@@ -35,20 +35,37 @@ The parameters of the planner can be changed through the following .m files:
    - ***mode_change_weight***: Weight for penlizing change of contact mode
    - ***goal_bias***: Probability of sampling points at the goal configuration
 - **is_forceclosure.m** (coefficient of friction of contacts)
-   - ***phi_G***: Friction angle at contact **G**
-   - ***phi_A***: Friction angle at contact **A**
-   - ***phi_B***: Friction angle at contact **B**
+   - ***phi_G***: Friction angle at **G**
+   - ***phi_A***: Friction angle at **A**
+   - ***phi_B***: Friction angle at **B**
    - **Note**: *Friction angle*: the arc-tangent of the coefficient of friction (in degree)
 - **is_thumb_collision.m** (geometries of thumb modeled as a trapezoid)
    - ***thumb_tip_thickness***: Thickness of the gripper's thumbtip
    - ***thumb_length***: Length of the thumb
    - ***thumb_base_thickness***: Thickness of the thumb's base (including the linkage of the gripper)
+   - ***d_FT***: Length difference between the finger and thumb
    - **Note**: the above parameters are divided by the object's length
 - **is_finger_collision.m** (geometries of finger modeled as a trapezoid)
    - ***finger_tip_thickness***: Thickness of the gripper's fingertip
    - ***finger_length***: Length of the finger
    - ***finger_base_thickness***: Thickness of the finger's base (including the linkage of the gripper)
+   - ***corner_x***: Horizontal poisiton of the obstacle above the finger relative to **G**
+   - ***corner_y***: Vertical poisiton of the obstacle above the finger relative to **G**
    - **Note**: the above parameters are divided by the object's length
+
+### 2.2 Generating the regions of C_free and C_obs
+The regions of **C_free** and **C_obs** plotted in the result are generated in advance before running the planner. The generated regions are saved as .mat files in `regions/` and being loaded into the program before plotting the result. Some regions based on different finger and thumb settings are provided in this repository.
+
+To generate a new set of regions with the changed parameters and settings in **is_thumb_collision.m**, **is_finger_collision.m**, and **save_map.m**, run:
+```
+save_map.m
+```
+After the program is completed, a figure plotting the regions will be shown:
+<p align = "center">
+<img src="files/Cspace.jpg" height="400">
+</p>
+
+Make sure to save the variables: ***P***, ***T_obs***, and ***F_OBS*** as .mat files.
 
 ## 3. About the planner, C-space, and motion primitives
 
