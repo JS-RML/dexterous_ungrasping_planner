@@ -35,22 +35,25 @@ The parameters of the planner can be changed through the following .m files:
    - ***mode_change_weight***: Weight for penlizing change of contact mode
    - ***goal_bias***: Probability of sampling points at the goal configuration
 - **is_forceclosure.m** (coefficient of friction of contacts)
-   - ***phi_G***: Friction angle at contact **G** in degree (*Friction angle*: the arc-tangent of the coefficient of friction)
-   - ***phi_A***: Friction angle at contact **A** in degree
-   - ***phi_B***: Friction angle at contact **B** in degree
-- **is_thumb_collision.m** (geometries of thumb modeled as a trapezoid, the parameters are divided by the object's length)
+   - ***phi_G***: Friction angle at contact **G**
+   - ***phi_A***: Friction angle at contact **A**
+   - ***phi_B***: Friction angle at contact **B**
+   - **Note**: *Friction angle*: the arc-tangent of the coefficient of friction (in degree)
+- **is_thumb_collision.m** (geometries of thumb modeled as a trapezoid)
    - ***thumb_tip_thickness***: Thickness of the gripper's thumbtip
    - ***thumb_length***: Length of the thumb
    - ***thumb_base_thickness***: Thickness of the thumb's base (including the linkage of the gripper)
-- **is_finger_collision.m** (geometries of finger modeled as a trapezoid, the parameters are divided by the object's length)
+   - **Note**: the above parameters are divided by the object's length
+- **is_finger_collision.m** (geometries of finger modeled as a trapezoid)
    - ***finger_tip_thickness***: Thickness of the gripper's fingertip
    - ***finger_length***: Length of the finger
    - ***finger_base_thickness***: Thickness of the finger's base (including the linkage of the gripper)
+   - **Note**: the above parameters are divided by the object's length
 
 ## 3. About the planner, C-space, and motion primitives
 
 ## 4. Planning examples
-Several examples under different planning scenarios, such as, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions can be found in `examples/README.md`.
+Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions of creating the planning examples can be found in `examples/README.md`.
 
 ## Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
