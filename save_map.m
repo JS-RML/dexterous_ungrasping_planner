@@ -9,7 +9,7 @@ z_t_obs = [];
 x_f_obs = [];
 y_f_obs = [];
 z_f_obs = [];
-finger_collision_check = true; %TODO: change to true for finger's collision check
+finger_collision_check = false; %TODO: change to true for finger's collision check
 
 d_FT = 0.47;
 
@@ -66,7 +66,10 @@ for i = 1:1:9
     hold on;
     plot3(colInd(k),rowInd(k), (i/10)*ones(length(k), 1));
     axis([0 90 0 90 0.1 0.9])
-
+    grid on;
+    pbaspect([1 1 0.7])
+    view(-30,20);
+    disp(['Iteration:',num2str(i)]);
 end
 
 P = [x,y,z.*100];
