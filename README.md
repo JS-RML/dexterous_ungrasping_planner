@@ -67,7 +67,19 @@ After the program is completed, a figure plotting the regions will be shown:
 
 Make sure to save the variables: ***P***, ***T_obs***, and ***F_OBS*** as .mat files.
 
-## 3. About the planner, C-space, and motion primitives
+## 3. About the C-space and motion primitives
+The configuration space (C-space) is represented by three nondimentionalized parameters in the object-gripper-environment system shown below:
+- ***θ*** : Angle between the object and the target surface
+- ***ψ*** : Angle between the object and the surface of the thumb
+- ***δ_A*** : Ratio of the object enclosed by the gripper over the object length (*δ_A = d_A / ℓ_obj*)
+<p align = "center">
+<img src="files/Cspace_description.png" height="350">
+</p>
+
+Three motion primitives predefined to navigate in the C-space are defined as follows:
+<p align = "center">
+<img src="files/MotionPrimitives.png" height="100">
+</p>
 
 ## 4. Planning examples
 Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions of creating the planning examples can be found in `examples/README.md`.
