@@ -93,10 +93,10 @@ For more details about the C-space, planner framework, and motion primitives, pl
 ## 4. Planning examples
 Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Details of these planning examples can be found in `examples/README.md`.
 
-## 6. License and original copyright
+## 5. License and original copyright
 The source code is released under MIT license. 
 
 **Note**: The source code of this MATLAB implementation is based on [rrt_toolbox](https://github.com/olzhas/rrt_toolbox) built by Olzhas Adiyatov and Atakan Varol licensed under the BSD 3-Clause "New" or "Revised" License. The original copyright notice can be found in `COPYRIGHT.txt`.
 
-## 5. Maintenance
+## 6. Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
