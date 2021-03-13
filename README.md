@@ -1,6 +1,6 @@
 # Dexterous ungrasping planner
 ## 1. Overview
-This repository contains the MATLAB implementation of dexterous ungrasping planner, which generates the optimal solutions for **Dexterous Ungrasping** (a robotic manipulation technique of securely transfering an object from the gripper to the environment). The planner framework is based on a sampling-based searching algorithm, RRT*, and customized with our contact-mode-based searching function and cost function to explore the configuration space using the predefined motion primitives. Given the information of geometries and friction coefficient of contacts in the object-gripper-environment system, the planner returns a sequence of motion primitives from initial to goal configurations with a secure and collision-free manner that is executable by a real robot platform.  
+This repository contains the MATLAB implementation of dexterous ungrasping planner, which generates the optimal solutions for **Dexterous Ungrasping** (a novel robotic manipulation technique of securely transfering an object from the gripper to the environment). The planner framework is based on a sampling-based searching algorithm, RRT*, and customized with our contact-mode-based searching function and cost function to explore the configuration space using the predefined motion primitives. Given the information of geometries and friction coefficient of contacts in the object-gripper-environment system, the planner returns a sequence of motion primitives from initial to goal configurations with a secure and collision-free manner that is executable by a real robot platform.  
 **Note**: This MATLAB implementation is developed based on [rrt_toolbox](https://github.com/olzhas/rrt_toolbox) built by Olzhas Adiyatov and Atakan Varol.
 
 For details about the implementation of dexterous ungrasping on the UR10 robot arm platform, please refer to the package [shallow_depth_insertion](https://github.com/HKUST-RML/shallow_depth_insertion).
@@ -13,7 +13,7 @@ For details about the implementation of dexterous ungrasping on the UR10 robot a
 
     *If you use shallow-depth insertion for your application or research, please star this repo and cite our related paper.* [(BibTeX)](files/BibTeX.txt)
 
-**Contributers**: [Chung Hee Kim](https://sites.google.com/view/chjohnkim/home), Ka Hei Mak, and [Jungwon Seo](http://junseo.people.ust.hk/) 
+**Contributers**: [Chung Hee Kim](https://sites.google.com/view/chjohnkim/home), [Ka Hei Mak](https://github.com/ansonmak), and [Jungwon Seo](http://junseo.people.ust.hk/) 
 
 ## 2. Run the planner  
 Before running the planner, please ensure the paths in the MATLAB environment are set correctly since this repository contains seperate sets of scripts in `examples/`. For example, if you are running the scripts in `dexterous_ungrasping_planner/`, remove the folder `examples/` and its subfolders from the MATLAB Path to prevent confliction between the sets of scripts.
@@ -77,7 +77,9 @@ The configuration space (C-space) is represented by three nondimentionalized par
 <img src="files/Cspace_description.png" height="350">
 </p>
 
-where the dimensionless representation of digit asymmetry is defined as: *α = (F_x – T_x) / ℓ_obj* 
+where the dimensionless representation of digit asymmetry is defined as: *α = (F_x – T_x) / ℓ_obj* .
+
+The figure in **2.2** shows the C-space represented by **[θ, ψ, δ_A]** with **C_free**: the search space of the planner and **c_obs**: the obstacle space.
 
 ### 3.2 Motion primitives
 Three motion primitives predefined to navigate in the C-space are as follows:
@@ -90,7 +92,7 @@ The planner is designed to navigate with these motion primitives and return an o
 For more details about the C-space, planner framework, and motion primitives, please see our published article, [Dexerous Ungrasping: Methods and Designs for Secure Placement and insertion through Dexterous Manpulation]()
 
 ## 4. Planning examples
-Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions of creating the planning examples can be found in `examples/README.md`.
+Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Details of these planning examples can be found in `examples/README.md`.
 
 ## 5. Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
