@@ -95,6 +95,7 @@ Several examples under different planning scenarios, for example, gripper config
 
 ## 6. License and original copyright
 The source code is released under MIT license. 
+
 **Note**: The source code of this MATLAB implementation is based on [rrt_toolbox](https://github.com/olzhas/rrt_toolbox) built by Olzhas Adiyatov and Atakan Varol licensed under the BSD 3-Clause "New" or "Revised" License. The original copyright notice can be found in `COPYRIGHT.txt`.
 
 ## 5. Maintenance
