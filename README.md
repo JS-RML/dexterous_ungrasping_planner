@@ -1,6 +1,6 @@
 # Dexterous ungrasping planner
 ## 1. Overview
-This repository contains the MATLAB implementation of dexterous ungrasping planner, which generates the optimal solutions for **Dexterous Ungrasping** (a robotic manipulation technique of securely transfering an object from the gripper to the environment). The planner framework is based on a sampling-based searching algorithm, RRT*, and customized with our contact-mode-based searching function and cost function to explore the configuration space using the predefined motion primitives. With the given information of geometries and friction coefficient of contacts in the object-gripper-environment system, the planner returns a sequence of motion primitives from initial to goal configurations with a secure and collision-free manner that is executable by a real robot platform.  
+This repository contains the MATLAB implementation of dexterous ungrasping planner, which generates the optimal solutions for **Dexterous Ungrasping** (a robotic manipulation technique of securely transfering an object from the gripper to the environment). The planner framework is based on a sampling-based searching algorithm, RRT*, and customized with our contact-mode-based searching function and cost function to explore the configuration space using the predefined motion primitives. Given the information of geometries and friction coefficient of contacts in the object-gripper-environment system, the planner returns a sequence of motion primitives from initial to goal configurations with a secure and collision-free manner that is executable by a real robot platform.  
 **Note**: This MATLAB implementation is developed based on [rrt_toolbox](https://github.com/olzhas/rrt_toolbox) built by Olzhas Adiyatov and Atakan Varol.
 
 For details about the implementation of dexterous ungrasping on the UR10 robot arm platform, please refer to the package [shallow_depth_insertion](https://github.com/HKUST-RML/shallow_depth_insertion).
@@ -67,7 +67,8 @@ After the program is completed, a figure plotting the regions will be shown:
 
 Make sure to save the variables: ***P***, ***T_obs***, and ***F_OBS*** as .mat files.
 
-## 3. About the C-space and motion primitives
+## 3. About the planner
+### 3.1 C-space
 The configuration space (C-space) is represented by three nondimentionalized parameters in the object-gripper-environment system shown below:
 - ***θ*** : Angle between the object and the target surface
 - ***ψ*** : Angle between the object and the surface of the thumb
@@ -76,13 +77,20 @@ The configuration space (C-space) is represented by three nondimentionalized par
 <img src="files/Cspace_description.png" height="350">
 </p>
 
-Three motion primitives predefined to navigate in the C-space are defined as follows:
+where the dimensionless representation of digit asymmetry is defined as: *α = F_x - T_x / ℓ_obj* 
+
+### 3.2 Motion primitives
+Three motion primitives predefined to navigate in the C-space are as follows:
 <p align = "center">
-<img src="files/MotionPrimitives.png" height="100">
+<img src="files/MotionPrimitives.png" height="120">
 </p>
+
+The planner is designed to navigate with these motion primitives and return an optimal solution in the C-space from the initial to goal configurations predefined by the user. 
+
+For more details about the C-space, planner framework, and motion primitives, please see our published article, [Dexerous Ungrasping: Methods and Designs for Secure Placement and insertion through Dexterous Manpulation]()
 
 ## 4. Planning examples
 Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Detailed instructions of creating the planning examples can be found in `examples/README.md`.
 
-## Maintenance
+## 5. Maintenance
 For any technical issues, please contact John Kim [chkimaa@connect.ust.hk]() and Ka Hei Mak [khmakac@connect.ust.hk]().
