@@ -65,7 +65,7 @@ After the program is completed, a figure plotting the regions will be shown:
 <img src="files/Cspace.jpg" height="400">
 </p>
 
-Make sure to save the variables: ***P***, ***T_obs***, and ***F_OBS*** as .mat files in `regions/`. To load the new regions for plotting the firgure, rename the directories correspondingly in `function plot(this)` of `DUSimple3D.m`.
+Make sure to save the variables: ***P***, ***T_OBS***, and ***F_OBS*** as .mat files in `regions/`. To load the new regions for plotting the firgure, rename the directories correspondingly in `function plot(this)` of `DUSimple3D.m`.
 
 ## 3. About the planner
 ### 3.1 C-space
@@ -79,7 +79,7 @@ The configuration space (C-space) is represented by three nondimentionalized par
 
 where the dimensionless representation of digit asymmetry is defined as: *α = (F_x – T_x) / ℓ_obj* .
 
-The figure in **2.2** shows the C-space represented by **[θ, ψ, δ_A]** with **C_free**: the search space of the planner and **c_obs**: the obstacle space.
+The figure in **2.2** shows the C-space represented by **[θ, ψ, δ_A]** with **C_free**: the search space of the planner and **C_obs**: the obstacle space.
 
 ### 3.2 Motion primitives
 Three motion primitives predefined to navigate in the C-space are as follows:
