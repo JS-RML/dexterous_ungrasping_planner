@@ -54,23 +54,22 @@ With the enlarged **C_obs** in the C-space, the planner can also find a solution
 - ***corner_x***: 0.3
 - ***corner_y***: 0.7
 
-## Example 4: Successful planning with rounded fingertip
-In this example, we modified the point contact at **A** with a rounded fingertip (non-zero radius of curvature).
+## Example 4: Successful planning with rolling at fingertip
+In this example, we replaced the point contact at **A** with a roller to make it roll without sliding. The contact force at **A** now only consists of a normal force without friction.
 <p align = "center">
-<img src="../files/example4_scene.png" height="300">
+<img src="../files/example4_rolling_scene.png" height="300">
 </p>
 
 ### 4.1 Result
-Under the changed set of force-closure grasp due to the rounded contact at **A**, the planner generates a complete path successfully.
+Under the changed set of force-closure grasp due to the rolling contact at **A**, the planner generates a complete path successfully.
 <p align = "center">
-<img src="../files/example2_result.jpg" height="400">
+<img src="../files/example4_result.jpg" height="400">
 </p>
 
 ### 4.2 Settings
-- ***start_point***: [30 0 0.8]
-- ***goal_point***: [0 39 0.6]
-- ***d_FT***: 0.47
-- ***fingertip_radius*** = 0.05 (radius of curvature at **A**)
+- ***start_point***: [20 0 0.5]
+- ***goal_point***: [0 21 0.3]
+- ***d_FT***: 0.6
 
 ## Example 5: Successful planning with pincer-like two-fingered gripper
 We have also devised another planning example of using a 1 DOF gripper with different mechanism to perform a placement task. Below shows a pincer-like two-fingered gripper where the fingers are connected through a revolute joint.
