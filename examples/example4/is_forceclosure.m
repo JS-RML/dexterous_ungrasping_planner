@@ -25,14 +25,23 @@ F_B0 = f_B0 * [cosd(psi), -sind(psi+theta), cosd(psi+theta)]'; % Get rid for sli
 F_B1 = f_B1 * [cosd(psi+phi_B), -sind(psi+theta+phi_B), cosd(psi+theta+phi_B)]'; % Get rid for sliding at B
 F_B2 = f_B2 * [cosd(psi-phi_B), -sind(psi+theta-phi_B), cosd(psi+theta-phi_B)]';
 
-if A_slide==false && B_slide==false
-    F = [F_G1, F_G2, F_A1, F_A2, F_B1, F_B2];
-elseif A_slide==false && B_slide==true
-    F = [F_G1, F_G2, F_A1, F_A2, F_B0, F_B2];
-elseif A_slide==true && B_slide==true
-    F = [F_G1, F_G2, F_A0, F_A1, F_B0, F_B2];
+A_roll = 1;
+if A_roll ~= 1
+    if A_slide==false && B_slide==false
+        F = [F_G1, F_G2, F_A1, F_A2, F_B1, F_B2];
+    elseif A_slide==false && B_slide==true
+        F = [F_G1, F_G2, F_A1, F_A2, F_B0, F_B2];
+    elseif A_slide==true && B_slide==true
+        F = [F_G1, F_G2, F_A0, F_A1, F_B0, F_B2];
+    end
+else
+    %A_rolling
+    if B_slide==false
+        F = [F_G1, F_G2, F_A0, F_A0, F_B1, F_B2];
+    elseif B_slide==true
+        F = [F_G1, F_G2, F_A0, F_A0, F_B0, F_B2];
+    end
 end
-
 %F = [F_G1, F_G2, F_A1, F_A2, F_B2, F_B0];
 
 %Condition 1: Rank(F) = n where n=3 for planar

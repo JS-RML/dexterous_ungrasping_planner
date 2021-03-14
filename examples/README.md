@@ -63,7 +63,7 @@ In this example, we replaced the point contact at **A** with a roller to make it
 ### 4.1 Result
 Under the changed set of force-closure grasp due to the rolling contact at **A**, the planner generates a complete path successfully.
 <p align = "center">
-<img src="../files/example4_result.jpg" height="400">
+<img src="../files/4_3d.jpg" height="400">
 </p>
 
 ### 4.2 Settings
@@ -80,11 +80,11 @@ We have also devised another planning example of using a 1 DOF gripper with diff
 ### 5.1 Result
 Although a variant form of gripper is used in this example, an ungrasping solution still can be generated successfully by our planner since the C-space is representated by **[θ, ψ, δ_A]**, which is independent to how the gripper is actuated as long as the C-space parameters exist in the system.
 <p align = "center">
-<img src="../files/example2_result.jpg" height="400">
+<img src="../files/5_3d.jpg" height="400">
 </p>
 
 ### 5.2 Settings
 - ***start_point***: [30 0 0.8]
-- ***goal_point***: [0 39 0.6]
-- ***d_FT***: 0.47
+- ***goal_point***: [0 44 0.6]
+- ***d_FT***: 0.4
 - ***finger_radius*** = 1 (distance between the fingertip to revolute joint of the gripper)

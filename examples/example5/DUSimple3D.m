@@ -284,7 +284,8 @@ classdef DUSimple3D < handle
             set(gcf(), 'Renderer', 'opengl');
             hold on;
             format short;
-            flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
+            %flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
+            flipud([round(this.tree(:,backtrace_path)',2)])
             
             draw_nodes = 1;
             if draw_nodes==1
@@ -299,7 +300,7 @@ classdef DUSimple3D < handle
                         if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
                             plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
                                 [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
-                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], 'g-','LineWidth', 0.5);
+                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], '-','Color','#77AC30' ,'LineWidth', 0.5);
                             drawn_nodes(current_index) = true;
 
                         end
@@ -307,7 +308,7 @@ classdef DUSimple3D < handle
                     end
                 end
             end
-            plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+            %plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
             %plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','r','MarkerSize',10,'MarkerFaceColor','r')
             %plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
             plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','#0072BD','MarkerSize',10,'MarkerFaceColor','#0072BD')
@@ -327,7 +328,6 @@ classdef DUSimple3D < handle
             %START: plot grey region 
             load("regions/grey_region(dft0.47).mat", "P")
             P(:,3) = P(:,3);
-            set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
             k = boundary(P,1);
             trisurf(k,P(:,2),P(:,1),P(:,3)./100, 'FaceColor', [0.5, 0.5, 0.5], 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
@@ -337,10 +337,13 @@ classdef DUSimple3D < handle
             end
             %END: plot grey region
             
+            set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
+            plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+            
+            
             %plot obs region
             load("regions/thumb_collision(dft0.47).mat", "T_OBS")
             T_OBS(:,3) = T_OBS(:,3);
-            set(findall(gca, 'Type', 'Line'),'LineWidth',1);
             grid on
             T_OBS_bound = boundary(T_OBS,1);
             trisurf(T_OBS_bound,T_OBS(:,2),T_OBS(:,1),T_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
@@ -349,7 +352,6 @@ classdef DUSimple3D < handle
             if this.finger_collision_check == true
                 load("regions/UpperObstacle(0.3,0.7)/finger_collision(0.3,0.7).mat", "F_OBS")
                 F_OBS(:,3) = F_OBS(:,3);
-                set(findall(gca, 'Type', 'Line'),'LineWidth',1);
                 grid on
                 F_OBS_bound = boundary(F_OBS,1);
                 trisurf(F_OBS_bound,F_OBS(:,2),F_OBS(:,1),F_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
@@ -358,10 +360,14 @@ classdef DUSimple3D < handle
             axis(this.XYZ_BOUNDARY);
             grid on;
             axis square;
-            xlabel('Theta'); 
-            ylabel('Psi');
-            zlabel('Gamma');
+            %xlabel('Theta'); 
+            %ylabel('Psi');
+            %zlabel('Gamma');
             disp(num2str(this.cumcost(backtrace_path(1))));
+            
+           axis([0 90 0 90 0.6 0.8])
+           pbaspect([1 1 0.5])
+           view(-25,20);
         end
         
         function newObj = copyobj(thisObj)
