@@ -54,7 +54,7 @@ With the enlarged **C_obs** in the C-space, the planner can also find a solution
 - ***corner_x***: 0.3
 - ***corner_y***: 0.7
 
-## Example 4: Successful planning with rolling at fingertip
+## Example 4: Successful planning with a roller at fingertip
 In this example, we replaced the point contact at **A** with a roller to make it roll without sliding. The contact force at **A** now only consists of a normal force without friction.
 <p align = "center">
 <img src="../files/example4_rolling_scene.png" height="300">
