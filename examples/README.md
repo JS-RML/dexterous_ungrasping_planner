@@ -16,7 +16,7 @@ The planner was unable to return a complete path since the goal configuration li
 ### 1.2 Settings
 - ***start_point***: [40 0 0.5]
 - ***goal_point***: [0 90 0.3]
--***finger_length***: 0.75
+- ***finger_length***: 0.75
 - ***d_FT***: 0
 
 ## Example 2: Successful planning with digit asymmetry 
@@ -34,7 +34,7 @@ The planner returns a complete path successfully from the initial to goal config
 ### 2.2 Settings
 - ***start_point***: [30 0 0.8]
 - ***goal_point***: [0 39 0.6]
--***finger_length***: 0.75
+- ***finger_length***: 0.75
 - ***d_FT***: 0.47
 
 ## Example 3: Successful planning around another obstacle
@@ -52,7 +52,7 @@ With the enlarged **C_obs** in the C-space, the planner can also find a solution
 ### 3.2 Settings
 - ***start_point***: [30 0 0.8]
 - ***goal_point***: [0 39 0.6]
--***finger_length***: 0.75
+- ***finger_length***: 0.75
 - ***d_FT***: 0.47
 - ***corner_x***: 0.3
 - ***corner_y***: 0.7
@@ -72,9 +72,9 @@ Under the changed set of force-closure grasp due to the rolling contact at **A**
 ### 4.2 Settings
 - ***start_point***: [20 0 0.5]
 - ***goal_point***: [0 21 0.3]
--***finger_length***: 0.75
--***d_FT***: 0.6
--***roller_radius***: 0.05
+- ***finger_length***: 0.75
+- ***d_FT***: 0.6
+- ***roller_radius***: 0.05
 
 ## Example 5: Successful planning with pincer-like two-fingered gripper
 We have also devised another planning example of using a 1 DOF gripper with different mechanism to perform a placement task. Below shows a pincer-like two-fingered gripper where the fingers are connected through a revolute joint.
@@ -91,6 +91,6 @@ Although a variant form of gripper is used in this example, an ungrasping soluti
 ### 5.2 Settings
 - ***start_point***: [30 0 0.8]
 - ***goal_point***: [0 44 0.6]
--***finger_length***: 0.75
+- ***finger_length***: 0.75
 - ***d_FT***: 0.4
 - ***finger_radius*** = 1 (distance between the fingertip to revolute joint of the gripper)
