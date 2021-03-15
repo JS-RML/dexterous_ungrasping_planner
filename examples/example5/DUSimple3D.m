@@ -287,27 +287,6 @@ classdef DUSimple3D < handle
             %flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
             flipud([round(this.tree(:,backtrace_path)',2)])
             
-            draw_nodes = 1;
-            if draw_nodes==1
-                drawn_nodes = zeros(1, this.nodes_added);
-                for ind = this.nodes_added:-1:1;
-                    if(sum(this.free_nodes(1:this.free_nodes_ind) == ind)>0)
-                        continue;
-                    end
-                    current_index = ind;
-                    while(current_index ~= 1 && current_index ~= -1)
-                        % avoid drawing same nodes twice or more times
-                        if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
-                            plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
-                                [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
-                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], '-','Color','#77AC30' ,'LineWidth', 0.5);
-                            drawn_nodes(current_index) = true;
-
-                        end
-                        current_index = this.parent(current_index);
-                    end
-                end
-            end
             %plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
             %plot3(this.tree(1, 1), this.tree(2, 1), this.tree(3, 1), '-o','Color','r','MarkerSize',10,'MarkerFaceColor','r')
             %plot3(this.goal_point(1), this.goal_point(2), this.goal_point(3),'-o','Color','m','MarkerSize',10,'MarkerFaceColor','m')
@@ -337,10 +316,6 @@ classdef DUSimple3D < handle
             end
             %END: plot grey region
             
-            set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
-            plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
-            
-            
             %plot obs region
             load("regions/thumb_collision(dft0.47).mat", "T_OBS")
             T_OBS(:,3) = T_OBS(:,3);
@@ -355,6 +330,31 @@ classdef DUSimple3D < handle
                 grid on
                 F_OBS_bound = boundary(F_OBS,1);
                 trisurf(F_OBS_bound,F_OBS(:,2),F_OBS(:,1),F_OBS(:,3)./100, 'FaceColor', 'r', 'FaceAlpha',0.2, 'EdgeColor', 'none', 'LineWidth', 0.1)
+            end
+            
+            set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
+            plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+
+            draw_nodes = 1;
+            if draw_nodes==1
+                drawn_nodes = zeros(1, this.nodes_added);
+                for ind = this.nodes_added:-1:1;
+                    if(sum(this.free_nodes(1:this.free_nodes_ind) == ind)>0)
+                        continue;
+                    end
+                    current_index = ind;
+                    while(current_index ~= 1 && current_index ~= -1)
+                        % avoid drawing same nodes twice or more times
+                        if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
+                            plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
+                                [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
+                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], '-','Color','#77AC30' ,'LineWidth', 0.5);
+                            drawn_nodes(current_index) = true;
+
+                        end
+                        current_index = this.parent(current_index);
+                    end
+                end
             end
             
             axis(this.XYZ_BOUNDARY);
@@ -453,7 +453,15 @@ classdef DUSimple3D < handle
             end
             hold on;
             k = boundary(temp(:,1), temp(:,2), 1);
-            plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
+            if i == 0.8
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#77AC30');
+            elseif i > 0.6 && i < 0.8
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#7E2F8E');
+            elseif i == 0.6
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#EDB120');
+            else
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
+            end
         end
         
         

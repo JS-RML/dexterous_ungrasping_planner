@@ -25,7 +25,7 @@ F_B0 = f_B0 * [cosd(psi), -sind(psi+theta), cosd(psi+theta)]'; % Get rid for sli
 F_B1 = f_B1 * [cosd(psi+phi_B), -sind(psi+theta+phi_B), cosd(psi+theta+phi_B)]'; % Get rid for sliding at B
 F_B2 = f_B2 * [cosd(psi-phi_B), -sind(psi+theta-phi_B), cosd(psi+theta-phi_B)]';
 
-A_roll = 1;
+A_roll = 0;
 if A_roll ~= 1
     if A_slide==false && B_slide==false
         F = [F_G1, F_G2, F_A1, F_A2, F_B1, F_B2];
