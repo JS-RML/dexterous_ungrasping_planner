@@ -92,8 +92,8 @@ classdef DUSimple3D < handle
             end
             mode_of_prev = this.contact_mode(this.tree(:, nearest_node)-this.tree(:, parent_of_nearest_node));
             if sample_rate == 2
-                angle = atand(this.goal_point(2)/((this.start_point(3)-this.goal_point(3))*100));
-                candidates = this.feasbile_actiond(this.max_step, this.tree(:, nearest_node), angle);
+                angle = atand((this.goal_point(2)-this.start_point(2))/((this.start_point(3)-this.goal_point(3))*100));
+                candidates = this.feasbile_action_a_roll(this.max_step, this.tree(:, nearest_node), angle);
             else
                 candidates = this.feasbile_action(this.max_step, this.tree(:, nearest_node), sample_rate);
             end
@@ -102,14 +102,14 @@ classdef DUSimple3D < handle
             costs = this.cost_function(repmat(new_node_position, 1, sample_rate+1), candidates) + this.mode_change_weight*mode_change_cost;
             [m,i] = min(costs);
             position = candidates(:,i);
-            
+            %{
             if position(3) < this.goal_point(3)
                 position(3) = this.goal_point(3);
             end
             if position(2) > this.goal_point(2)
                 position(2) = this.goal_point(2);
             end
-            
+            %}
             %{
             relative_position = new_node_position - this.tree(:, nearest_node); 
             dist = this.cost_function(relative_position, [0; 0; 0]); 
@@ -150,7 +150,7 @@ classdef DUSimple3D < handle
             for i=0:sample_rate
                 config = nearest_node_position+increment*i;
                 fc = is_forceclosure(config(1), config(2), config(3), A_slide, B_slide);
-                thumb_c  = is_thumb_collision(config(1), config(2), config(3), 0.8);
+                thumb_c  = is_thumb_collision(config(1), config(2), config(3), 0.47);
                 if this.finger_collision_check == true
                     finger_c = is_finger_collision(config(1), config(2), config(3),0.3,0.7);
                 else
@@ -305,7 +305,7 @@ classdef DUSimple3D < handle
             end
 
             %START: plot grey region 
-            load("regions/A_rolling/grey_region(dft0.6).mat", "P")
+            load("regions/grey_region(dft0.47).mat", "P")
             P(:,3) = P(:,3);
             grid on
             k = boundary(P,1);
@@ -317,7 +317,7 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("regions/A_rolling/thumb_collision(dft0.6).mat", "T_OBS")
+            load("regions/thumb_collision(dft0.47).mat", "T_OBS")
             T_OBS(:,3) = T_OBS(:,3);
             grid on
             T_OBS_bound = boundary(T_OBS,1);
@@ -334,10 +334,7 @@ classdef DUSimple3D < handle
             
             set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
             plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
-            path = [4.0000   21.0000    0.3000;
-                    0.0000   21.0000    0.3000];
-            plot3(path(:,1), path(:,2), path(:,3), '-.k','LineWidth', 2.5);
-
+            
             draw_nodes = 1;
             if draw_nodes==1
                 drawn_nodes = zeros(1, this.nodes_added);
@@ -368,7 +365,7 @@ classdef DUSimple3D < handle
             %zlabel('Gamma');
             disp(num2str(this.cumcost(backtrace_path(1))));
             
-            axis([0 90 0 90 0.3 0.5])
+            axis([0 90 0 90 0.5 0.7])
             pbaspect([1 1 0.5])
             view(-25,20);
         end
@@ -430,6 +427,13 @@ classdef DUSimple3D < handle
             candidates(:, 2) = parent_node_pos + [0;max_step;0];
             candidates(:, 3) = parent_node_pos + [0;0;-max_step/100];
         end 
+
+        function candidates = feasbile_action_a_roll(max_step, parent_node_pos, angle)
+            candidates = zeros(3, 3);
+            candidates(:, 1) = parent_node_pos + [-max_step;0;0];
+            candidates(:, 2) = parent_node_pos + [0;0;-max_step/100];
+            candidates(:, 3) = parent_node_pos + [0;max_step*cosd(atand(3*pi/180));(max_step/100)*sind(atand(3*pi/180))];%atand(15*pi/180)
+        end 
         
         function mode = contact_mode(diff)
             mode = 2*ones(1,size(diff,2));
@@ -456,15 +460,7 @@ classdef DUSimple3D < handle
             end
             hold on;
             k = boundary(temp(:,1), temp(:,2), 1);
-            if i >= 0.45
-                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#77AC30');
-            elseif i > 0.35 && i < 0.45
-                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#7E2F8E');
-            elseif i <= 0.35
-                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#EDB120');
-            else
-                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
-            end
+            plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
         end
         
         

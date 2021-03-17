@@ -92,7 +92,7 @@ classdef DUSimple3D < handle
             end
             mode_of_prev = this.contact_mode(this.tree(:, nearest_node)-this.tree(:, parent_of_nearest_node));
             if sample_rate == 2
-                angle = atand(this.goal_point(2)/((this.start_point(3)-this.goal_point(3))*100));
+                angle = atand((this.goal_point(2)-this.start_point(2))/((this.start_point(3)-this.goal_point(3))*100));
                 candidates = this.feasbile_actiond(this.max_step, this.tree(:, nearest_node), angle);
             else
                 candidates = this.feasbile_action(this.max_step, this.tree(:, nearest_node), sample_rate);
@@ -284,7 +284,8 @@ classdef DUSimple3D < handle
             set(gcf(), 'Renderer', 'opengl');
             hold on;
             format short;
-            flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
+            %flipud([round(backtrace_path',0) round(this.cumcost(backtrace_path)',2) round(this.tree(:,backtrace_path)',2)])
+            flipud([round(this.tree(:,backtrace_path)',2)])
             
             draw_nodes = 1;
             if draw_nodes==1

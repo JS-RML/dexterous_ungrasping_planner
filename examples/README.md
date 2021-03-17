@@ -58,38 +58,38 @@ With the enlarged **C_obs** in the C-space, the planner can also find a solution
 - ***corner_y***: 0.7
 
 ## Example 4: Successful planning with a roller at fingertip
-In this example, we replaced the point contact at **A** with a roller to make it roll without sliding. The contact force at **A** now only consists of a normal force without friction.
+In this example, we replaced the point contact at **A** with round fingertip to make it roll without sliding as **ψ** increases. **δ_A** will increase since the round fingertip will roll towards **G**.
 <p align = "center">
-<img src="../files/example4_rolling_scene.png" height="300">
+<img src="../files/example4_scene.png" height="300">
 </p>
 
 ### 4.1 Result
-Under the changed set of force-closure grasp due to the rolling contact at **A**, the planner generates a complete path successfully.
+The planner found a solution with first increase **ψ** and **δ_A** simuatanely, then decrease **δ_A** and **θ** monotonically to reach the goal.
 <p align = "center">
-<img src="../files/4_3d.jpg" height="400">
+<img src="../files/example4_result.jpg" height="400">
 </p>
 
 ### 4.2 Settings
-- ***start_point***: [20 0 0.5]
-- ***goal_point***: [0 21 0.3]
+- ***start_point***: [30 0 0.6]
+- ***goal_point***: [0 39 0.6]
 - ***finger_length***: 0.75
-- ***d_FT***: 0.6
-- ***roller_radius***: 0.05
+- ***d_FT***: 0.47
+- ***tip_radius***: 0.6 (radius of curvature at **A**)
 
 ## Example 5: Successful planning with pincer-like two-fingered gripper
 We have also devised another planning example of using a 1 DOF gripper with different mechanism to perform a placement task. Below shows a pincer-like two-fingered gripper where the fingers are connected through a revolute joint.
 <p align = "center">
-<img src="../files/example5_scene.png" height="300">
+<img src="../files/example5_scene_v2.png" height="300">
 </p>
 
 ### 5.1 Result
 Although a variant form of gripper is used in this example, an ungrasping solution still can be generated successfully by our planner since the C-space is representated by **[θ, ψ, δ_A]**, which is independent to how the gripper is actuated as long as the C-space parameters exist in the system.
 <p align = "center">
-<img src="../files/5_3d.jpg" height="400">
+<img src="../files/example5_result.jpg" height="400">
 </p>
 
 ### 5.2 Settings
-- ***start_point***: [30 0 0.8]
+- ***start_point***: [30 5 0.8]
 - ***goal_point***: [0 44 0.6]
 - ***finger_length***: 0.75
 - ***d_FT***: 0.4
