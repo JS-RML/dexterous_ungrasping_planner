@@ -57,7 +57,7 @@ With the enlarged **C_obs** in the C-space, the planner can also find a solution
 - ***corner_x***: 0.3
 - ***corner_y***: 0.7
 
-## Example 4: Successful planning with a roller at fingertip
+## Example 4: Successful planning with round fingertip
 In this example, we replaced the point contact at **A** with round fingertip to make it roll without sliding as **ψ** increases. **δ_A** will increase since the round fingertip will roll towards **G**.
 <p align = "center">
 <img src="../files/example4_scene.png" height="300">
