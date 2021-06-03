@@ -333,7 +333,7 @@ classdef DUSimple3D < handle
             end
             
             set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
-            plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+            %plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
 
             draw_nodes = 1;
             if draw_nodes==1
@@ -368,6 +368,19 @@ classdef DUSimple3D < handle
            axis([0 90 0 90 0.6 0.8])
            pbaspect([1 1 0.5])
            view(-25,20);
+           dark_theme = 0;
+           if dark_theme == 1
+               set(gca,'Color','k')
+               set(0,'defaultfigurecolor',[0 0 0]);
+               set(gca,'GridColor','w');
+               set(gca,'XColor','w');
+               set(gca,'YColor','w');
+               set(gca,'ZColor','w');
+               plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.w','LineWidth', 2.5);
+           else
+               set(0,'defaultfigurecolor',[1 1 1]);
+               plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+           end
         end
         
         function newObj = copyobj(thisObj)
