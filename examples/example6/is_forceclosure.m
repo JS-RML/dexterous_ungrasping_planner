@@ -15,12 +15,20 @@ f_B0 = 1;
 f_B1 = 1;
 f_B2 = 1;
 
+a = 0.5; %length
+b = 0.25; %thickness
+A_normal_offset = atand(b*(d_AB-a)/(a^2*sqrt(1-((d_AB-a)^2)/a^2)));
+%disp(A_normal_offset)
+
 %Wrenches
 F_G1 = f_G1 * [0, -sind(phi_G), cosd(phi_G)]';
 F_G2 = f_G2 * [0, sind(phi_G), cosd(phi_G)]'; 
 F_A0 = f_A0 * [-(1-d_AB)*sind(90), sind(theta), -cosd(theta)]';
 F_A1 = f_A1 * [-(1-d_AB)*sind(90-phi_A), sind(theta-phi_A), -cosd(theta-phi_A)]';
 F_A2 = f_A2 * [-(1-d_AB)*sind(90+phi_A), sind(theta+phi_A), -cosd(theta+phi_A)]';
+% F_A0 = f_A0 * [-(1-d_AB)*sind(90+A_normal_offset), sind(theta+A_normal_offset), -cosd(theta+A_normal_offset)]';
+% F_A1 = f_A1 * [-(1-d_AB)*sind(90-phi_A+A_normal_offset), sind(theta-phi_A+A_normal_offset), -cosd(theta-phi_A+A_normal_offset)]';
+% F_A2 = f_A2 * [-(1-d_AB)*sind(90+phi_A+A_normal_offset), sind(theta+phi_A+A_normal_offset), -cosd(theta+phi_A+A_normal_offset)]';
 F_B0 = f_B0 * [cosd(psi), -sind(psi+theta), cosd(psi+theta)]'; % Get rid for sliding at B
 F_B1 = f_B1 * [cosd(psi+phi_B), -sind(psi+theta+phi_B), cosd(psi+theta+phi_B)]'; % Get rid for sliding at B
 F_B2 = f_B2 * [cosd(psi-phi_B), -sind(psi+theta-phi_B), cosd(psi+theta-phi_B)]';

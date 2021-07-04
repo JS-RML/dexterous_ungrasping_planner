@@ -94,3 +94,22 @@ Although a variant form of gripper is used in this example, an ungrasping soluti
 - ***finger_length***: 0.75
 - ***d_FT***: 0.4
 - ***finger_radius*** = 1 (distance between the fingertip to revolute joint of the gripper)
+
+## Example 6: Successful planning with a semi-elliptical object
+For a semi-elliptical object such as go stone, the finger will roll along the object's surface with **A** shifting towards the fingertip as ψ increases.
+<p align = "center">
+<img src="../files/example6_scene.png" height="300">
+</p>
+
+### 6.1 Result
+The planner returned a solution with curved path at the begining where δ_A increased nonlinearly with ψ according to the object's curvature. The path is then reached to the goal with the two primitives that traverses monotonically.
+<p align = "center">
+<img src="../files/example6_result.jpg" height="400">
+</p>
+
+### 6.2 Settings
+- ***start_point***: [30 0 0.5]
+- ***goal_point***: [0 70 0.7]
+- ***finger_length***: 0.75
+- ***d_FT***: 0.47
+- ***object_thickness*** = 0.25
