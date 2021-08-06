@@ -11,7 +11,7 @@ y_f_obs = [];
 z_f_obs = [];
 finger_collision_check = false; %TODO: change to true for finger's collision check
 
-d_FT = 0.35;
+d_FT = 0.3;
 
 %corner position relative to G
 corner_x = 0.4;
@@ -65,7 +65,7 @@ for i = 1:1:9
     end
     hold on;
     plot3(colInd(k),rowInd(k), (i/10)*ones(length(k), 1));
-    axis([0 90 0 90 0.1 0.9])
+    axis([0 90 0 90 0.1 0.75])
     grid on;
     pbaspect([1 1 0.7])
     view(-30,20);

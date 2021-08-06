@@ -27,8 +27,6 @@ classdef DUSimple3D < handle
         goal_bias
         % boolen for enabling finger's collision check
         finger_collision_check
-        % finger excess length (fingertip relative to middle point of go stone)
-        finger_excess_length
     end
     methods
         % class constructor
@@ -61,23 +59,15 @@ classdef DUSimple3D < handle
             this.goal_bias = conf.goal_bias;
             %finger's collision check
             this.finger_collision_check = false; %TODO: change to true if enable finger collision check
-            %obtain finger excess length
-            this.finger_excess_length = this.start_point(3) - 0.5;
-            if this.finger_excess_length > 0
-                this.start_point(3) = 0.5;
-                this.tree(3, 1) = 0.5;
-            end
         end
    
         function position = sample(this)
             % generates and return random point in area defined in
-            position = [this.start_point(1)*1.1 - this.XYZ_BOUNDARY(1); this.goal_point(2)*1.1 - this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(6) - this.goal_point(3)*0.95] .* rand(3,1) ...
-                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.goal_point(3)*0.95];
-            % position = [this.start_point(1)*1.5 - this.XYZ_BOUNDARY(1); this.goal_point(2)*1.5 - this.XYZ_BOUNDARY(3); this.start_point(3)*1.1 - this.goal_point(3)*0.9] .* rand(3,1) ...
-            %     + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.goal_point(3)*0.9];
+            position = [this.start_point(1)*1.5 - this.XYZ_BOUNDARY(1); this.goal_point(2)*1.5 - this.XYZ_BOUNDARY(3); this.start_point(3)*1.1 - this.goal_point(3)*0.9] .* rand(3,1) ...
+                + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.goal_point(3)*0.9];
             %position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.goal_point(3) - this.start_point(3)] .* rand(3,1) ...
             %    + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.start_point(3)];
-            % position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(6) - this.XYZ_BOUNDARY(5)] .* rand(3,1) ...
+            %position = [this.XYZ_BOUNDARY(2) - this.XYZ_BOUNDARY(1); this.XYZ_BOUNDARY(4) - this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(6) - this.XYZ_BOUNDARY(5)] .* rand(3,1) ...
             %    + [this.XYZ_BOUNDARY(1);this.XYZ_BOUNDARY(3); this.XYZ_BOUNDARY(5)];
             if rand < this.goal_bias
                 position = this.goal_point';
@@ -103,11 +93,7 @@ classdef DUSimple3D < handle
             mode_of_prev = this.contact_mode(this.tree(:, nearest_node)-this.tree(:, parent_of_nearest_node));
             if sample_rate == 2
                 angle = atand((this.goal_point(2)-this.start_point(2))/((this.start_point(3)-this.goal_point(3))*100));
-                if this.finger_excess_length > 0
-                    candidates = this.feasbile_action_go_stone_roll(this.max_step, this.tree(:, nearest_node), this.finger_excess_length, this.start_point, this.goal_point);
-                else
-                    candidates = this.feasbile_actiond(this.max_step, this.tree(:, nearest_node), angle);
-                end
+                candidates = this.feasbile_actiond(this.max_step, this.tree(:, nearest_node), angle);
             else
                 candidates = this.feasbile_action(this.max_step, this.tree(:, nearest_node), sample_rate);
             end
@@ -319,7 +305,7 @@ classdef DUSimple3D < handle
             end
 
             %START: plot grey region 
-            load("regions/grey_region(dft0.35).mat", "P")
+            load("regions/grey_region(coin).mat", "P")
             P(:,3) = P(:,3);
             grid on
             k = boundary(P,1);
@@ -331,7 +317,7 @@ classdef DUSimple3D < handle
             %END: plot grey region
             
             %plot obs region
-            load("regions/thumb_collision(dft0.35).mat", "T_OBS")
+            load("regions/thumb_collision(coin).mat", "T_OBS")
             T_OBS(:,3) = T_OBS(:,3);
             grid on
             T_OBS_bound = boundary(T_OBS,1);
@@ -348,7 +334,7 @@ classdef DUSimple3D < handle
             
             set(findall(gca, 'Type', 'Line'),'LineWidth',1.5);
             %plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
-            
+
             draw_nodes = 1;
             if draw_nodes==1
                 drawn_nodes = zeros(1, this.nodes_added);
@@ -362,7 +348,7 @@ classdef DUSimple3D < handle
                         if(drawn_nodes(current_index) == false || drawn_nodes(this.parent(current_index)) == false)
                             plot3([this.tree(1,current_index);this.tree(1, this.parent(current_index))], ...
                                 [this.tree(2, current_index);this.tree(2, this.parent(current_index))], ...
-                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], '-','Color','#77AC30','LineWidth', 0.5);
+                                [this.tree(3, current_index);this.tree(3, this.parent(current_index))], '-','Color','#77AC30' ,'LineWidth', 0.5);
                             drawn_nodes(current_index) = true;
 
                         end
@@ -379,22 +365,30 @@ classdef DUSimple3D < handle
             %zlabel('Gamma');
             disp(num2str(this.cumcost(backtrace_path(1))));
             
-            axis([0 90 0 90 0.5 0.9])
-            pbaspect([1 1 0.5])
-            view(-25,20);
-            dark_theme = 0;
-            if dark_theme == 1
-                set(gca,'Color','k')
-                set(0,'defaultfigurecolor',[0 0 0]);
-                set(gca,'GridColor','w');
-                set(gca,'XColor','w');
-                set(gca,'YColor','w');
-                set(gca,'ZColor','w');
-                plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.w','LineWidth', 2.5);
-            else
-                set(0,'defaultfigurecolor',[1 1 1]);
-                plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
-            end
+           axis([0 90 0 90 0.6 0.8])
+           pbaspect([1 1 0.5])
+           view(-25,20);
+           dark_theme = 0;
+           if dark_theme == 1
+               set(gca,'Color','k')
+               set(0,'defaultfigurecolor',[0 0 0]);
+               set(gca,'GridColor','w');
+               set(gca,'XColor','w');
+               set(gca,'YColor','w');
+               set(gca,'ZColor','w');
+               plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.w','LineWidth', 2.5);
+           else
+               set(0,'defaultfigurecolor',[1 1 1]);
+               plot3(this.tree(1,backtrace_path), this.tree(2,backtrace_path), this.tree(3,backtrace_path), '-.k','LineWidth', 2.5);
+           end
+
+           % caging path
+           plot3(75, 0, 0.75, '-o','Color','#0072BD','MarkerSize',10,'MarkerFaceColor','#0072BD')
+           cage_path = [
+            75    0     0.75
+            75    69    0.75
+            30     69    0.75];
+           plot3(cage_path(:,1), cage_path(:,2), cage_path(:,3), '-.', 'Color', [0.6 0.6 0.6], 'LineWidth', 2.5)
         end
         
         function newObj = copyobj(thisObj)
@@ -454,31 +448,6 @@ classdef DUSimple3D < handle
             candidates(:, 2) = parent_node_pos + [0;max_step;0];
             candidates(:, 3) = parent_node_pos + [0;0;-max_step/100];
         end 
-
-        function candidates = feasbile_action_a_roll(max_step, parent_node_pos, angle)
-            candidates = zeros(3, 3);
-            candidates(:, 1) = parent_node_pos + [-max_step;0;0];
-            candidates(:, 2) = parent_node_pos + [0;0;-max_step/100];
-            candidates(:, 3) = parent_node_pos + [0;max_step*cosd(atand(3*pi/180));(max_step/100)*sind(atand(3*pi/180))];%atand(15*pi/180)
-        end 
-
-        function candidates = feasbile_action_go_stone_roll(max_step, parent_node_pos, dA_excess, start, goal)
-            candidates = zeros(3, 3);
-            candidates(:, 1) = parent_node_pos + [-max_step;0;0];
-            candidates(:, 2) = parent_node_pos + [0;0;-max_step/100];
-            a = 0.5; %major radius, Go stone: a=11.5mm
-            b = 0.25; %minor radius, Go stone: b=5.7mm
-            roll_dA = a*tand(parent_node_pos(2)+max_step)/sqrt(b^2/a^2 + tand(parent_node_pos(2)+max_step)^2) + a;
-            if roll_dA > dA_excess + a
-                psi_terminate = atand(b*dA_excess/(a^2*sqrt(1-dA_excess^2/a^2)));
-                angle = atand((goal(2)-psi_terminate)/((start(3)+dA_excess-goal(3))*100));
-                candidates(:, 2) = parent_node_pos + [0;0;-max_step/100];
-                candidates(:, 3) = parent_node_pos + [0;max_step*sind(angle);-(max_step/100)*cosd(angle)];
-            else
-                candidates(:, 2) = [0;0;0];
-                candidates(:, 3) = parent_node_pos + [0;max_step;roll_dA - parent_node_pos(3)];
-            end
-        end 
         
         function mode = contact_mode(diff)
             mode = 2*ones(1,size(diff,2));
@@ -505,7 +474,15 @@ classdef DUSimple3D < handle
             end
             hold on;
             k = boundary(temp(:,1), temp(:,2), 1);
-            plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
+            if i == 0.8
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#EDB120');
+            elseif i > 0.6 && i < 0.8
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#D95319');
+            elseif i == 0.6
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1), 'Color', '#0072BD');
+            else
+                plot3(temp(k,2),temp(k,1), (i)*ones(length(k), 1));
+            end
         end
         
         

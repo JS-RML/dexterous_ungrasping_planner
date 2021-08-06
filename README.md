@@ -2,11 +2,11 @@
 ## 1. Overview
 This repository contains the MATLAB implementation of dexterous ungrasping planner, which generates the optimal solutions for **Dexterous Ungrasping** (a novel robotic manipulation technique of securely transferring an object from the gripper to the environment). The planner framework is based on a sampling-based searching algorithm, RRT*, and customized with our contact-mode-based searching function and cost function to explore the configuration space using the predefined motion primitives. Given the information of geometries and friction coefficient of contacts in the object-gripper-environment system, the planner returns a sequence of motion primitives from initial to goal configurations with a secure and collision-free manner that is executable by a real robot platform.  
 
-For details about the implementation of dexterous ungrasping on the UR10 robot arm platform, please refer to the package [shallow_depth_insertion](https://github.com/HKUST-RML/shallow_depth_insertion).
+For details about the implementation of dexterous ungrasping on the UR10 robot arm platform, please refer to the package [dexterous ungrasping](https://github.com/HKUST-RML/dexterous_ungrasping).
 
 **Published Article**
 
-- C. H. Kim, K. H. Mak, and J. Seo, "[Dexterous Ungrasping: Planning, Control, and Design for Secure Placement and Insertion through Dexterous Manpulation]()," submitted to *SAGE Journals: The International Journal of Robotics Research (IJRR)* (Under review). 
+- C. H. Kim, K. H. Mak, and J. Seo, "[Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation]()," submitted to *IEEE Robotics and Automation Letters* (Under review). 
 
 - C. H. Kim and J. Seo, "[Shallow-Depth Insertion: Peg in Shallow Hole Through Robotic In-Hand Manipulation](https://ieeexplore.ieee.org/document/8598749)," in *IEEE Robotics and Automation Letters*, vol. 4, no. 2, pp. 383-390, April 2019.
 
