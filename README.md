@@ -87,8 +87,8 @@ Three motion primitives predefined to navigate in the C-space are as follows:
 </p>
 
 The planner is designed to navigate with these motion primitives and return an optimal solution in the C-space from the initial to goal configurations predefined by the user. 
-
-For more details about the C-space, planner framework, and motion primitives, please see our published article, [Dexerous Ungrasping: Methods and Designs for Secure Placement and insertion through Dexterous Manpulation]()
+<!--
+For more details about the C-space, planner framework, and motion primitives, please see our published article, [Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation]() -->
 
 ## 4. Planning examples
 Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Details of these planning examples can be found in `examples/README.md`.
