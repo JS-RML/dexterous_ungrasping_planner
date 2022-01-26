@@ -6,7 +6,7 @@ For details about the implementation of dexterous ungrasping on the UR10 robot a
 
 **Published Article**
 
-- C. H. Kim, K. H. Mak, and J. Seo, "[Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation]()," submitted to *IEEE Robotics and Automation Letters* (Under review). 
+- C. H. Kim, K. H. Mak, and J. Seo, "[Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation](https://ieeexplore.ieee.org/document/9681220)," in *IEEE Robotics and Automation Letters*, vol. 7, no. 2, pp. 2234-2241, April 2022. 
 
 - C. H. Kim and J. Seo, "[Shallow-Depth Insertion: Peg in Shallow Hole Through Robotic In-Hand Manipulation](https://ieeexplore.ieee.org/document/8598749)," in *IEEE Robotics and Automation Letters*, vol. 4, no. 2, pp. 383-390, April 2019.
 
@@ -87,8 +87,8 @@ Three motion primitives predefined to navigate in the C-space are as follows:
 </p>
 
 The planner is designed to navigate with these motion primitives and return an optimal solution in the C-space from the initial to goal configurations predefined by the user. 
-<!--
-For more details about the C-space, planner framework, and motion primitives, please see our published article, [Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation]() -->
+
+For more details about the C-space, planner framework, and motion primitives, please see our published article, [Planning for Dexterous Ungrasping: Secure Ungrasping through Dexterous Manipulation](https://ieeexplore.ieee.org/document/9681220)
 
 ## 4. Planning examples
 Several examples under different planning scenarios, for example, gripper configuration or additional obstacle in the environment, are provided in this repository. Details of these planning examples can be found in `examples/README.md`.
